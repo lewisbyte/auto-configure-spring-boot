@@ -20,29 +20,22 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBody
  * @author: lewis
  * @create: 2021-02-24 00:21
  */
-public class ResponseBodyResolvers implements ApplicationContextAware, HandlerMethodArgumentResolver, HandlerMethodReturnValueHandler {
+public class ResponseBodyResolvers implements ApplicationContextAware, HandlerMethodReturnValueHandler {
 
     private RequestResponseBodyMethodProcessor delegate;
 
     private ApplicationContext context;
 
+    @Override
     public boolean supportsReturnType(MethodParameter returnType) {
         // 支持自定义注解处理器
         return (AnnotatedElementUtils.hasAnnotation(returnType.getContainingClass(), MyResponseBody.class) ||
                 returnType.hasMethodAnnotation(MyResponseBody.class));
     }
 
+    @Override
     public void handleReturnValue(Object returnValue, MethodParameter returnType, ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
         delegate.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
-    }
-
-    // 默认不支持请求参数解析
-    public boolean supportsParameter(MethodParameter parameter) {
-        return false;
-    }
-
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        return delegate.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
     }
 
     @Override
