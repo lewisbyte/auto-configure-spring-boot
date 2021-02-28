@@ -11,6 +11,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 
 /**
@@ -24,7 +25,6 @@ public class ResponseBodyResolvers implements ApplicationContextAware, HandlerMe
     private RequestResponseBodyMethodProcessor delegate;
 
     private ApplicationContext context;
-
 
     public boolean supportsReturnType(MethodParameter returnType) {
         // 支持自定义注解处理器
@@ -47,14 +47,12 @@ public class ResponseBodyResolvers implements ApplicationContextAware, HandlerMe
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        context = applicationContext;
-        HandlerMethodReturnValueHandlerComposite bean = applicationContext.getBean(HandlerMethodReturnValueHandlerComposite.class);
-
-
-        HandlerMethodReturnValueHandler obj = bean.getHandlers().stream().filter(c -> c.getClass().isAssignableFrom(RequestResponseBodyMethodProcessor.class))
+        this.context = applicationContext;
+        // 获取处理器适配器bean
+        RequestMappingHandlerAdapter bean = applicationContext.getBean(RequestMappingHandlerAdapter.class);
+        // 从处理器适配器中拿到 RequestResponseBodyMethodProcessor 作为委托处理器
+        this.delegate = (RequestResponseBodyMethodProcessor) bean.getArgumentResolvers().
+                stream().filter(c -> c.getClass().isAssignableFrom(RequestResponseBodyMethodProcessor.class))
                 .findFirst().get();
-
-
-
     }
 }

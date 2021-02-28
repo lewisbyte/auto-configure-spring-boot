@@ -1,5 +1,6 @@
 package com.github.hcsp.app;
 
+import com.github.hcsp.starter.MyResponseBody;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -10,7 +11,7 @@ import java.util.List;
 @Controller
 public class MyController {
     @GetMapping("users")
-    @ResponseBody
+    @MyResponseBody
     public List<User> user() {
         return Arrays.asList(new User(1, "A"), new User(2, "B"));
     }
