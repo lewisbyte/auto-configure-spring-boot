@@ -11,6 +11,9 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @program: root
  * @description: 注解处理器
@@ -32,17 +35,24 @@ public class ResponseBodyResolvers implements ApplicationContextAware, HandlerMe
 
     @Override
     public void handleReturnValue(Object returnValue, MethodParameter returnType, ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
-        delegate.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
+
+        if (delegate==null) {
+            // 获取处理器适配器bean
+            RequestMappingHandlerAdapter bean = context.getBean(RequestMappingHandlerAdapter.class);
+            // 从处理器适配器中拿到 RequestResponseBodyMethodProcessor 作为委托处理器
+            this.delegate = (RequestResponseBodyMethodProcessor) bean.getArgumentResolvers().
+                    stream().filter(c -> c.getClass().isAssignableFrom(RequestResponseBodyMethodProcessor.class))
+                    .findFirst().get();
+        }
+        Map<Object,Object> map = new HashMap<>();
+        map.put("status","ok");
+        map.put("data",returnValue);
+        delegate.handleReturnValue(map, returnType, mavContainer, webRequest);
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
-        // 获取处理器适配器bean
-        RequestMappingHandlerAdapter bean = applicationContext.getBean(RequestMappingHandlerAdapter.class);
-        // 从处理器适配器中拿到 RequestResponseBodyMethodProcessor 作为委托处理器
-        this.delegate = (RequestResponseBodyMethodProcessor) bean.getArgumentResolvers().
-                stream().filter(c -> c.getClass().isAssignableFrom(RequestResponseBodyMethodProcessor.class))
-                .findFirst().get();
+        //此处初始化delegate会出现循环依赖
     }
 }
