@@ -20,7 +20,7 @@ import java.util.List;
  */
 
 @Configuration
-public class WebMvnConf implements WebMvcConfigurer {
+public class WebMvcConf implements WebMvcConfigurer {
 
     @Override
     public void addReturnValueHandlers(List<HandlerMethodReturnValueHandler> handlers) {

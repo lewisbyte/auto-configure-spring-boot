@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBody
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @program: root
@@ -40,7 +41,7 @@ public class ResponseBodyResolvers implements ApplicationContextAware, HandlerMe
             // 获取处理器适配器bean
             RequestMappingHandlerAdapter bean = context.getBean(RequestMappingHandlerAdapter.class);
             // 从处理器适配器中拿到 RequestResponseBodyMethodProcessor 作为委托处理器
-            this.delegate = (RequestResponseBodyMethodProcessor) bean.getArgumentResolvers().
+            this.delegate = (RequestResponseBodyMethodProcessor) Objects.requireNonNull(bean.getArgumentResolvers()).
                     stream().filter(c -> c.getClass().isAssignableFrom(RequestResponseBodyMethodProcessor.class))
                     .findFirst().get();
         }

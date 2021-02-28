@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.github.hcsp.starter.WebMvnConf
+com.github.hcsp.starter.WebMvcConf
