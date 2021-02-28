@@ -1,4 +1,4 @@
-package com.github.hcsp.app;
+package com.github.hcsp.starter;
 
 import com.github.hcsp.starter.ResponseBodyResolvers;
 import org.springframework.beans.factory.annotation.Autowired;
