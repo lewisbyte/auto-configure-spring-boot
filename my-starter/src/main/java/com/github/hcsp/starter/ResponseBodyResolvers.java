@@ -36,14 +36,6 @@ public class ResponseBodyResolvers implements ApplicationContextAware, HandlerMe
     @Override
     public void handleReturnValue(Object returnValue, MethodParameter returnType, ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
 
-        if (delegate==null) {
-            // 获取处理器适配器bean
-            RequestMappingHandlerAdapter bean = context.getBean(RequestMappingHandlerAdapter.class);
-            // 从处理器适配器中拿到 RequestResponseBodyMethodProcessor 作为委托处理器
-            this.delegate = (RequestResponseBodyMethodProcessor) bean.getArgumentResolvers().
-                    stream().filter(c -> c.getClass().isAssignableFrom(RequestResponseBodyMethodProcessor.class))
-                    .findFirst().get();
-        }
         Map<Object,Object> map = new HashMap<>();
         map.put("status","ok");
         map.put("data",returnValue);
@@ -54,5 +46,13 @@ public class ResponseBodyResolvers implements ApplicationContextAware, HandlerMe
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
         //此处初始化delegate会出现循环依赖
+        if (delegate==null) {
+            // 获取处理器适配器bean
+            RequestMappingHandlerAdapter bean = context.getBean(RequestMappingHandlerAdapter.class);
+            // 从处理器适配器中拿到 RequestResponseBodyMethodProcessor 作为委托处理器
+            this.delegate = (RequestResponseBodyMethodProcessor) bean.getArgumentResolvers().
+                    stream().filter(c -> c.getClass().isAssignableFrom(RequestResponseBodyMethodProcessor.class))
+                    .findFirst().get();
+        }
     }
 }
